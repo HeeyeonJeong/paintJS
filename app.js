@@ -3,6 +3,7 @@ const ctx = canvas.getContext("2d");
 const colors = document.querySelectorAll(".jsColor");
 const range = document.querySelector("#jsRange");
 const mode = document.querySelector("#jsMode");
+const saveBtn = document.querySelector("#jsSave");
 
 const INITIAL_COLOR = "#2c2c2c";
 const CANVAS_SIZE = 500;
@@ -25,6 +26,7 @@ function startPainting() {
   painting = true;
 }
 
+//paint mode, default
 function onMouseMove(event) {
   const x = event.offsetX;
   const y = event.offsetY;
@@ -37,17 +39,20 @@ function onMouseMove(event) {
   }
 }
 
+//color change
 function handleClickColor(event) {
   const color = event.target.style.backgroundColor;
   ctx.strokeStyle = color;
   ctx.fillStyle = color;
 }
 
+//brush range change
 function handleRange(event) {
   const range = event.target.value;
   ctx.lineWidth = range;
 }
 
+//change mode button
 function changeMode() {
   if (fillStyle) {
     fillStyle = false;
@@ -58,10 +63,25 @@ function changeMode() {
   }
 }
 
+//fillStyle mode
 function handleCanvasClick() {
   if (fillStyle) {
     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
   }
+}
+
+//canvas 우클릭 저장 방지
+function noclick(event) {
+  event.preventDefault();
+}
+
+//save button
+function handleSaveCanvas() {
+  const image = canvas.toDataURL();
+  const link = document.createElement("a");
+  link.href = image;
+  link.download = "PaintJS";
+  link.click();
 }
 
 if (canvas) {
@@ -70,6 +90,7 @@ if (canvas) {
   canvas.addEventListener("mouseup", stopPainting);
   canvas.addEventListener("mouseleave", stopPainting);
   canvas.addEventListener("click", handleCanvasClick);
+  canvas.addEventListener("contextmenu", noclick); //우클릭 저장 방지
 }
 
 Array.from(colors).forEach((color) => {
@@ -82,4 +103,8 @@ if (range) {
 
 if (mode) {
   mode.addEventListener("click", changeMode);
+}
+
+if (saveBtn) {
+  saveBtn.addEventListener("click", handleSaveCanvas);
 }
